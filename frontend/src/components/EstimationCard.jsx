@@ -1,17 +1,26 @@
 export default function EstimationCard({ estimation }) {
-  const { brand, model, year, mileage, estimatedPrice, createdAt } = estimation
+  // اصلاح تطبیق نام فیلدها با خروجی بک‌اند جانگو
+  const brand = estimation.brand || estimation.Brand;
+  // نکته: در مدل شما نام مدل ماشین جداگانه ذخیره نشده، احتمالا منظور همان برند است یا باید اضافه شود
+  // فعلا مدل را خالی یا همان برند نشان میدهیم
+  const model = ""; 
+  const year = estimation.model_year || estimation.Model_Year;
+  const mileage = estimation.mileage || estimation.Mileage;
+  const estimatedPrice = estimation.predicted_price;
+  const createdAt = estimation.created_at;
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "IRR", // تغییر به ریال چون قیمت‌ها به تومان/ریال هستند
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price)
   }
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("en-US", {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("fa-IR", { // تغییر به تاریخ شمسی (اختیاری)
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -29,18 +38,18 @@ export default function EstimationCard({ estimation }) {
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold text-blue-600">{formatPrice(estimatedPrice)}</p>
-          <p className="text-xs text-gray-500 mt-1">Estimated Price</p>
+          <p className="text-xs text-gray-500 mt-1">قیمت تخمینی</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
         <div>
-          <p className="text-xs text-gray-500 mb-1">Year</p>
+          <p className="text-xs text-gray-500 mb-1">سال ساخت</p>
           <p className="text-sm font-medium text-gray-900">{year}</p>
         </div>
         <div>
-          <p className="text-xs text-gray-500 mb-1">Mileage</p>
-          <p className="text-sm font-medium text-gray-900">{mileage.toLocaleString()} km</p>
+          <p className="text-xs text-gray-500 mb-1">کارکرد</p>
+          <p className="text-sm font-medium text-gray-900">{Number(mileage).toLocaleString()} km</p>
         </div>
       </div>
     </div>

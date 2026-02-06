@@ -7,41 +7,29 @@ import axios from "../api/axios"
 
 export default function NewEstimation() {
   const navigate = useNavigate()
+  
+  // ۱. اضافه کردن فیلدهای جدید به State
   const [formData, setFormData] = useState({
     brand: "",
-    model: "",
-    year: "",
+    model_year: "", // تغییر نام برای هماهنگی ذهنی (اختیاری)
     mileage: "",
+    gearbox: "دنده ای", // مقدار پیش‌فرض
+    fuel_type: "بنزینی", // مقدار پیش‌فرض
+    body_condition: "سالم", // مقدار پیش‌فرض
+    engine_condition: "سالم", // مقدار پیش‌فرض
+    chassis_condition: "سالم و پلمپ", // مقدار پیش‌فرض
     city: "",
   })
+  
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const brands = [
-    "Toyota",
-    "Honda",
-    "Ford",
-    "Chevrolet",
-    "BMW",
-    "Mercedes-Benz",
-    "Audi",
-    "Volkswagen",
-    "Nissan",
-    "Hyundai",
-  ]
-
-  const cities = [
-    "New York",
-    "Los Angeles",
-    "Chicago",
-    "Houston",
-    "Phoenix",
-    "Philadelphia",
-    "San Antonio",
-    "San Diego",
-    "Dallas",
-    "San Jose",
-  ]
+  // لیست‌های داده (می‌توانید کامل‌تر کنید)
+  const brands = ["پراید", "پژو 206", "سمند", "تویوتا", "هیوندای"]
+  const cities = ["tehran", "mashhad", "isfahan", "shiraz"]
+  const gearboxes = ["دنده ای", "اتوماتیک"]
+  const fuelTypes = ["بنزینی", "دوگانه سوز", "هیبریدی"]
+  const conditions = ["سالم", "تصادفی", "نیاز به تعمیر", "رنگ دار"]
 
   const handleChange = (e) => {
     setFormData({
@@ -55,17 +43,31 @@ export default function NewEstimation() {
     setError("")
     setLoading(true)
 
+    // ۲. ساخت آبجکت نهایی دقیقاً مشابه چیزی که Postman تست کردید
+    const payload = {
+        "Brand": formData.brand,
+        "Model_Year": Number.parseInt(formData.model_year),
+        "Mileage": Number.parseInt(formData.mileage),
+        "Gearbox": formData.gearbox,
+        "Fuel_Type": formData.fuel_type,
+        "Body_Condition": formData.body_condition,
+        "Engine_Condition": formData.engine_condition,
+        "Chassis_Condition": formData.chassis_condition,
+        "City": formData.city
+    }
+
     try {
-      await axios.post("/api/predict/", {
-        brand: formData.brand,
-        model: formData.model,
-        year: Number.parseInt(formData.year),
-        mileage: Number.parseInt(formData.mileage),
-        city: formData.city,
-      })
+      // ارسال درخواست به بک‌اند
+      const response = await axios.post("/api/predict/", payload)
+      
+      // اگر موفقیت آمیز بود، کاربر را هدایت کن یا قیمت را نمایش بده
+      console.log("Prediction Result:", response.data)
+      alert(`قیمت تخمینی: ${response.data.predicted_price}`) // نمایش موقت
       navigate("/dashboard")
+      
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to create estimation. Please try again.")
+      console.error(err)
+      setError(err.response?.data?.message || "خطا در ارتباط با سرور. لطفا ورودی‌ها را چک کنید.")
     } finally {
       setLoading(false)
     }
@@ -77,8 +79,7 @@ export default function NewEstimation() {
 
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">New Estimation</h1>
-          <p className="text-gray-600 mt-2">Enter car details to get a price estimate</p>
+          <h1 className="text-3xl font-bold text-gray-900">تخمین قیمت خودرو</h1>
         </div>
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
@@ -87,115 +88,60 @@ export default function NewEstimation() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            
+            {/* Brand */}
             <div>
-              <label htmlFor="brand" className="block text-sm font-medium text-gray-700 mb-2">
-                Brand
-              </label>
-              <select
-                id="brand"
-                name="brand"
-                value={formData.brand}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-              >
-                <option value="">Select a brand</option>
-                {brands.map((brand) => (
-                  <option key={brand} value={brand}>
-                    {brand}
-                  </option>
-                ))}
+              <label className="block text-sm font-medium text-gray-700 mb-2">برند</label>
+              <select name="brand" value={formData.brand} onChange={handleChange} required className="w-full px-4 py-2 border rounded-md">
+                <option value="">انتخاب کنید</option>
+                {brands.map(b => <option key={b} value={b}>{b}</option>)}
               </select>
             </div>
 
+            {/* Model Year */}
             <div>
-              <label htmlFor="model" className="block text-sm font-medium text-gray-700 mb-2">
-                Model
-              </label>
-              <input
-                type="text"
-                id="model"
-                name="model"
-                value={formData.model}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                placeholder="e.g., Camry, Civic, F-150"
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-2">سال ساخت</label>
+              <input type="number" name="model_year" value={formData.model_year} onChange={handleChange} required className="w-full px-4 py-2 border rounded-md" placeholder="مثلا 1396" />
             </div>
 
+            {/* Mileage */}
             <div>
-              <label htmlFor="year" className="block text-sm font-medium text-gray-700 mb-2">
-                Year
-              </label>
-              <input
-                type="number"
-                id="year"
-                name="year"
-                value={formData.year}
-                onChange={handleChange}
-                required
-                min="1990"
-                max={new Date().getFullYear() + 1}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                placeholder="e.g., 2020"
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-2">کارکرد (کیلومتر)</label>
+              <input type="number" name="mileage" value={formData.mileage} onChange={handleChange} required className="w-full px-4 py-2 border rounded-md" />
             </div>
 
+            {/* Gearbox */}
             <div>
-              <label htmlFor="mileage" className="block text-sm font-medium text-gray-700 mb-2">
-                Mileage (km)
-              </label>
-              <input
-                type="number"
-                id="mileage"
-                name="mileage"
-                value={formData.mileage}
-                onChange={handleChange}
-                required
-                min="0"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                placeholder="e.g., 50000"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                City
-              </label>
-              <select
-                id="city"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-              >
-                <option value="">Select a city</option>
-                {cities.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
-                ))}
+              <label className="block text-sm font-medium text-gray-700 mb-2">گیربکس</label>
+              <select name="gearbox" value={formData.gearbox} onChange={handleChange} className="w-full px-4 py-2 border rounded-md">
+                {gearboxes.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>
 
+             {/* Fuel Type */}
+             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">نوع سوخت</label>
+              <select name="fuel_type" value={formData.fuel_type} onChange={handleChange} className="w-full px-4 py-2 border rounded-md">
+                {fuelTypes.map(f => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </div>
+
+            {/* City */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">شهر</label>
+              <select name="city" value={formData.city} onChange={handleChange} required className="w-full px-4 py-2 border rounded-md">
+                <option value="">انتخاب کنید</option>
+                {cities.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+
+            {/* دکمه ارسال */}
             <div className="flex gap-4 pt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? "Estimating..." : "Get Estimation"}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate("/dashboard")}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-medium transition"
-              >
-                Cancel
+              <button type="submit" disabled={loading} className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">
+                {loading ? "در حال محاسبه..." : "تخمین قیمت"}
               </button>
             </div>
+
           </form>
         </div>
       </div>

@@ -1,7 +1,7 @@
-from rest_framework.routers import DefaultRouter
-from .views import EstimationViewSet
+# backend/estimations/urls.py
+from django.urls import path
+from .views import UserEstimationsView
 
-router = DefaultRouter()
-router.register('', EstimationViewSet)
-
-urlpatterns = router.urls
+urlpatterns = [
+    path('', UserEstimationsView.as_view()), # چون در backend/urls.py پیشوند api/estimations/ دارد
+]

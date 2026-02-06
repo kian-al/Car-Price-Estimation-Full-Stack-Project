@@ -20,7 +20,8 @@ export default function Login() {
     setLoading(true)
 
     try {
-      const { data } = await axios.post("/api/auth/login", formData)
+      // تغییر مهم: اضافه کردن اسلش (/) به انتهای آدرس
+      const { data } = await axios.post("/api/auth/login/", formData)
       localStorage.setItem("token", data.token)
       navigate("/dashboard", { replace: true })
     } catch (err) {

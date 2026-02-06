@@ -1,20 +1,14 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from prediction.models import CarPrediction
+from prediction.serializers import CarPredictionSerializer
 
-from .models import Estimation
-from .serializers import EstimationSerializer
-
-
-class EstimationViewSet(ModelViewSet):
-    queryset = Estimation.objects.all()
-    serializer_class = EstimationSerializer
+class UserEstimationsView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return Estimation.objects.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(
-            user=self.request.user,
-            predicted_price=0
-        )
+    def get(self, request):
+        # فقط پیش‌بینی‌های مربوط به کاربر فعلی را بگیر
+        estimations = CarPrediction.objects.filter(user=request.user).order_by('-created_at')
+        serializer = CarPredictionSerializer(estimations, many=True)
+        return Response(serializer.data)
