@@ -1,0 +1,24 @@
+# ===== Python =====
+__pycache__/
+*.pyc
+.env
+venv/
+
+# ===== ML / Data =====
+*.csv
+*.pkl
+*.joblib
+*.h5
+
+# ===== Node =====
+node_modules/
+npm-debug.log*
+
+# ===== Build =====
+dist/
+build/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+.zip
