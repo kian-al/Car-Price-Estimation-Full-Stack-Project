@@ -57,7 +57,10 @@ python manage.py runserver
 2. Frontend SetupOpen a new terminal:Bashcd frontend
 npm install
 npm run dev
-📡 API DocumentationBase URL: http://localhost:8000👤 AuthenticationMethodEndpointDescriptionPOST/api/auth/register/Register a new userPOST/api/auth/login/Login and obtain JWT token🚗 Car ServicesMethodEndpointDescriptionPOST/api/predict/Submit car details for price prediction (Auth required)GET/api/estimations/Get user's estimation history (Auth required)📂 Project StructurePlaintextroot/
+📡 API DocumentationBase URL: http://localhost:8000
+👤 AuthenticationMethodEndpointDescriptionPOST/api/auth/register/Register a new userPOST/api/auth/login/Login and obtain JWT token
+🚗 Car ServicesMethodEndpointDescriptionPOST/api/predict/Submit car details for price prediction (Auth required)GET/api/estimations/Get user's estimation history (Auth required)
+📂 Project StructurePlaintextroot/
 ├── backend/            # Django Server Code
 │   ├── accounts/       # User management
 │   ├── prediction/     # ML Logic & Views
